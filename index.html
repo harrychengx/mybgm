@@ -347,7 +347,7 @@
                 return names.map((name, index) => {
                     const count = fullList.value.filter(item => {
                         const matchDay = (index === 0 || item.air_weekday === index);
-                        const matchMode = (viewMode.value === 'season' || myCollection.value[item.id]);
+                        const matchMode = (viewMode.value === 'all' || myCollection.value[item.id]);
                         const matchAired = (index === 0) ? true : item.isAired;
                         return matchDay && matchMode && matchAired;
                     }).length;
@@ -423,4 +423,5 @@
 </script>
 </body>
 </html>
+
 
