@@ -9,11 +9,7 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Mochiy+Pop+One&display=swap" rel="stylesheet">
     <style>
-        /* 防止滚动条导致页面左右跳动 */
-        html {
-            scrollbar-gutter: stable;
-        }
-
+        html { scrollbar-gutter: stable; }
         :root {
             --bg-color: #24242e;
             --card-bg: #2a2a35;
@@ -38,8 +34,6 @@
             line-height: 1.5;
             padding-bottom: 4px;
         }
-        
-        /* 胶囊按钮样式 */
         .capsule-container {
             background-color: #1a1a24;
             padding: 3px;
@@ -61,7 +55,6 @@
             color: white !important;
             box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
         }
-
         .anime-card { 
             background-color: var(--card-bg);
             border: 1px solid rgba(174, 129, 255, 0.12);
@@ -82,7 +75,6 @@
         }
         [v-cloak] { display: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        
         .tab-btn {
             position: relative;
             flex-shrink: 0;
@@ -93,20 +85,16 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: transparent;
         }
-
         .tab-selected { 
             background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%) !important; 
             color: white !important; 
             box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
             border: 2px solid rgba(255, 255, 255, 0.6) !important;
-            transform: none !important;
         }
-
         .tab-is-today:not(.tab-selected) { 
             border: 2px solid var(--accent-cyan) !important;
             color: var(--accent-cyan) !important;
         }
-
         .btn-action-container {
             position: absolute;
             top: -1.5px;
@@ -134,41 +122,26 @@
         }
         .score-badge-box {
             position: absolute;
-            top: 0.4rem; 
-            right: 0.4rem; 
+            top: 0.4rem; right: 0.4rem; 
             background: rgba(0, 0, 0, 0.65);
             backdrop-filter: blur(4px);
-            min-width: 2.3rem;
-            height: 1.3rem; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-            z-index: 20;
-            padding: 0 1px;
+            min-width: 2.3rem; height: 1.3rem; 
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 0.5rem; z-index: 20;
         }
         .score-num {
             color: var(--accent-orange);
-            font-size: 0.8rem;
-            font-weight: 900;
+            font-size: 0.8rem; font-weight: 900;
             filter: drop-shadow(0 0 2px rgba(255, 157, 0, 0.5));
-            line-height: 1;
-            margin-top: -1px; 
-            display: inline-block;
         }
         .status-badge {
             position: absolute;
-            top: 0.4rem; 
-            left: 0.4rem; 
-            width: 1.3rem;
-            height: 1.3rem;
+            top: 0.4rem; left: 0.4rem; 
+            width: 1.3rem; height: 1.3rem;
             border-radius: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             z-index: 20;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -189,10 +162,10 @@
         <div class="flex items-center gap-4">
             <div class="w-full sm:w-56 md:w-72">
                 <input v-model="searchQuery" type="text" placeholder="快速定位番剧..." 
-                    class="search-input rounded-2xl px-5 h-[40px] text-base w-full">
+                    class="search-input rounded-2xl px-5 h-[48px] text-base w-full">
             </div>
             <a :href="'https://bgm.tv/user/' + uid" target="_blank" class="group shrink-0 flex items-center">
-                <div class="w-[42px] h-[42px] rounded-full overflow-hidden border-2 border-transparent group-hover:border-pink-500 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.7)] transition-all duration-300 flex items-center justify-center">
+                <div class="w-[48px] h-[48px] rounded-full overflow-hidden border-2 border-transparent group-hover:border-pink-500 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.7)] transition-all duration-300 flex items-center justify-center">
                     <img :src="userAvatar" class="w-full h-full object-cover" @error="handleAvatarError" alt="avatar">
                 </div>
             </a>
@@ -212,7 +185,7 @@
                 </span>
             </span>
             <span class="text-[10px] mt-2 opacity-40 font-bold tracking-tighter uppercase">
-                {{ tab.id === 0 ? 'ALL' : tab.date }}
+                {{ tab.id === 0 ? currentSeasonLabel : tab.date }}
             </span>
         </button>
     </nav>
@@ -289,6 +262,20 @@
             const currentChecking = ref('');
             const fullList = ref([]);
             const myCollection = ref({}); 
+
+            const currentSeasonLabel = computed(() => {
+                if (viewMode.value === 'mine') return 'MINE';
+                
+                const now = new Date();
+                const year = now.getFullYear(); // 修改为四位数
+                const month = now.getMonth() + 1;
+                let season = "";
+                if (month >= 1 && month <= 3) season = "冬";
+                else if (month >= 4 && month <= 6) season = "春";
+                else if (month >= 7 && month <= 9) season = "夏";
+                else season = "秋";
+                return `${year} ${season}`;
+            });
             
             const statusConfig = {
                 1: { name: '想看', color: 'bg-pink-500', icon: 'IconHeart' },
@@ -417,11 +404,9 @@
             });
 
             onMounted(fetchData);
-            return { uid, userAvatar, handleAvatarError: (e) => e.target.src = "https://lain.bgm.tv/pic/user/l/icon.jpg", viewMode, currentTab, searchQuery, navTabs, loading, currentChecking, displayList, openBangumi: (id) => window.open(`https://bgm.tv/subject/${id}`, '_blank'), updateCollection, myCollection, statusConfig, shouldShowBtn };
+            return { uid, userAvatar, handleAvatarError: (e) => e.target.src = "https://lain.bgm.tv/pic/user/l/icon.jpg", viewMode, currentTab, searchQuery, navTabs, loading, currentChecking, displayList, openBangumi: (id) => window.open(`https://bgm.tv/subject/${id}`, '_blank'), updateCollection, myCollection, statusConfig, shouldShowBtn, currentSeasonLabel };
         }
     }).mount('#app');
 </script>
 </body>
 </html>
-
-
